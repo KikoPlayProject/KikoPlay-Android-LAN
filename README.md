@@ -11,3 +11,4 @@ KikoPlay 局域网安卓端APP
 
 之后就可以访问播放列表并观看视频了:
 ![](screenshot/3.jpg)
+
