@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/danmuSettingLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#aa000000"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.35">
+
+        <TextView
+            android:id="@+id/blockTipView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="@string/blockTip"
+            android:textColor="@color/controlText"
+            android:textSize="@dimen/textSizeMedium"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/danmu_top"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:padding="8dp"
+            android:text="@string/blockType_top"
+            android:textAlignment="center"
+            android:textSize="@dimen/textSizeSmall"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/danmu_roll"
+            app:layout_constraintTop_toBottomOf="@id/blockTipView" />
+
+        <TextView
+            android:id="@+id/danmu_roll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:padding="8dp"
+            android:text="@string/blockType_roll"
+            android:textAlignment="center"
+            android:textSize="@dimen/textSizeSmall"
+            app:layout_constraintHorizontal_chainStyle="spread"
+            app:layout_constraintLeft_toRightOf="@id/danmu_top"
+            app:layout_constraintRight_toLeftOf="@id/danmu_bottom"
+            app:layout_constraintTop_toBottomOf="@id/blockTipView" />
+
+        <TextView
+            android:id="@+id/danmu_bottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="@string/blockType_bottom"
+            android:textAlignment="center"
+            android:textSize="@dimen/textSizeSmall"
+            app:layout_constraintLeft_toRightOf="@id/danmu_roll"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/blockTipView" />
+
+        <View
+            android:id="@+id/spLine1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="4dp"
+            android:background="#A3FFFFFF"
+            app:layout_constraintTop_toBottomOf="@id/danmu_top" />
+
+        <TextView
+            android:id="@+id/settingTipView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:padding="8dp"
+            android:text="@string/settingTip"
+            android:textColor="@color/controlText"
+            android:textSize="@dimen/textSizeMedium"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/spLine1" />
+
+        <TextView
+            android:id="@+id/danmu_opac_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:paddingBottom="4dp"
+            android:text="@string/desc_opacity"
+            android:textColor="@color/controlText"
+            android:textSize="@dimen/textSizeSmall"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/danmu_opac_seek"
+            app:layout_constraintTop_toBottomOf="@id/settingTipView" />
+
+        <SeekBar
+            android:id="@+id/danmu_opac_seek"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:max="100"
+            android:progress="100"
+            app:layout_constraintLeft_toRightOf="@id/danmu_opac_desc"
+            app:layout_constraintRight_toLeftOf="@id/danmu_opac_value"
+            app:layout_constraintTop_toTopOf="@id/danmu_opac_desc" />
+
+        <TextView
+            android:id="@+id/danmu_opac_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:paddingBottom="4dp"
+            android:text="100%"
+            android:textAlignment="center"
+            android:textColor="@color/controlText"
+            android:textSize="@dimen/textSizeSmall"
+            app:layout_constraintLeft_toRightOf="@id/danmu_opac_seek"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/danmu_opac_desc" />
+
+        <TextView
+            android:id="@+id/danmu_size_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:paddingBottom="4dp"
+            android:text="@string/desc_size"
+            android:textColor="@color/controlText"
+            android:textSize="@dimen/textSizeSmall"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/danmu_size_seek"
+            app:layout_constraintTop_toBottomOf="@id/danmu_opac_desc" />
+
+        <SeekBar
+            android:id="@+id/danmu_size_seek"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:max="250"
+            android:progress="50"
+            app:layout_constraintLeft_toRightOf="@id/danmu_size_desc"
+            app:layout_constraintRight_toLeftOf="@id/danmu_size_value"
+            app:layout_constraintTop_toTopOf="@id/danmu_size_desc" />
+
+        <TextView
+            android:id="@+id/danmu_size_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:paddingBottom="4dp"
+            android:text="100%"
+            android:textAlignment="center"
+            android:textColor="@color/controlText"
+            android:textSize="@dimen/textSizeSmall"
+            app:layout_constraintLeft_toRightOf="@id/danmu_size_seek"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/danmu_size_desc" />
+
+        <TextView
+            android:id="@+id/danmu_region_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:paddingBottom="4dp"
+            android:text="@string/desc_region"
+            android:textColor="@color/controlText"
+            android:textSize="@dimen/textSizeSmall"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/danmu_region_seek"
+            app:layout_constraintTop_toBottomOf="@id/danmu_size_desc" />
+
+        <SeekBar
+            android:id="@+id/danmu_region_seek"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:max="3"
+            android:progress="3"
+            app:layout_constraintLeft_toRightOf="@id/danmu_region_desc"
+            app:layout_constraintRight_toLeftOf="@id/danmu_region_value"
+            app:layout_constraintTop_toTopOf="@id/danmu_region_desc" />
+
+        <TextView
+            android:id="@+id/danmu_region_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:paddingBottom="4dp"
+            android:text="100%"
+            android:textAlignment="center"
+            android:textColor="@color/controlText"
+            android:textSize="@dimen/textSizeSmall"
+            app:layout_constraintLeft_toRightOf="@id/danmu_region_seek"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/danmu_region_desc" />
+
+        <TextView
+            android:id="@+id/danmu_speed_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:paddingBottom="4dp"
+            android:text="@string/desc_speed"
+            android:textColor="@color/controlText"
+            android:textSize="@dimen/textSizeSmall"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/danmu_speed_seek"
+            app:layout_constraintTop_toBottomOf="@id/danmu_region_desc" />
+
+        <SeekBar
+            android:id="@+id/danmu_speed_seek"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:max="15"
+            android:progress="5"
+            app:layout_constraintLeft_toRightOf="@id/danmu_speed_desc"
+            app:layout_constraintRight_toLeftOf="@id/danmu_speed_value"
+            app:layout_constraintTop_toTopOf="@id/danmu_speed_desc" />
+
+        <TextView
+            android:id="@+id/danmu_speed_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:paddingBottom="4dp"
+            android:text="100%"
+            android:textAlignment="center"
+            android:textColor="@color/controlText"
+            android:textSize="@dimen/textSizeSmall"
+            app:layout_constraintLeft_toRightOf="@id/danmu_speed_seek"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/danmu_speed_desc" />
+    </android.support.constraint.ConstraintLayout>
+</android.support.constraint.ConstraintLayout>

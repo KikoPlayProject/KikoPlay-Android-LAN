@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:ndroid="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/titlebg"
+        android:orientation="horizontal"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/ctr_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="2dp"
+            android:tint="@android:color/white"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_back" />
+
+        <TextView
+            android:id="@+id/ctr_title"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:singleLine="true"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/textSizeML"
+            app:layout_constraintLeft_toRightOf="@id/ctr_back"
+            app:layout_constraintTop_toTopOf="@id/ctr_back" />
+    </LinearLayout>
+
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/controlbg"
+        android:id="@+id/controlBtnLayout">
+        <ImageButton
+            android:id="@+id/ctr_pause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tint="@android:color/white"
+            app:srcCompat="@drawable/ic_play"
+            android:padding="6dp"
+            android:layout_margin="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/play_pause"/>
+        <ImageButton
+            android:id="@+id/ctr_danmu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tint="@android:color/white"
+            app:srcCompat="@drawable/ic_danmu_show"
+            android:padding="6dp"
+            android:layout_margin="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/danmu_show_hide"/>
+        <SeekBar
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/ctr_seek"
+            android:layout_weight="1"/>
+        <TextView
+            android:id="@+id/ctr_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/textSizeSmall"
+            android:layout_gravity="center"/>
+        <ImageButton
+            android:id="@+id/ctr_danmu_settings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tint="@android:color/white"
+            app:srcCompat="@drawable/ic_danmu_settings"
+            android:padding="6dp"
+            android:layout_margin="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/danmu_setting"
+            android:visibility="gone"/>
+        <ImageButton
+            android:id="@+id/ctr_fullscreen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_fullscreen"
+            android:padding="6dp"
+            android:layout_margin="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            ndroid:ignore="RtlHardcoded"
+            android:contentDescription="@string/fullscreen"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/seekTipTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/textviewborder"
+        android:textColor="@android:color/white"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</android.support.constraint.ConstraintLayout>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="textSizeLarge">20sp</dimen>
+    <dimen name="textSizeML">18sp</dimen>
+    <dimen name="textSizeMedium">15sp</dimen>
+    <dimen name="textSizeSmall">12sp</dimen>
+</resources>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+    <color name="colorTitleFont">#FFFFFF</color>
+
+    <color name="itemDesc">#8a000000</color>
+    <color name="itemTitle_Collection">#00BCD4</color>
+    <color name="itemTitle_N">#C8000000</color>
+    <color name="itemTitle_F">#59000000</color>
+    <color name="itemTitle_P">#04C5B3</color>
+    <color name="controlText">#CEFFFFFF</color>
+</resources>
