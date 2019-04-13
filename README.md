@@ -9,6 +9,5 @@ KikoPlay 局域网安卓端APP
 确保手机和电脑处于同一个局域网中，打开KikoPlay安卓APP，点击右上角按钮设置KikoPlay服务地址：
 ![](screenshot/2.jpg)
 
-之后就可以访问播放列表并观看视频了
-
+之后就可以访问播放列表并观看视频了:
 ![](screenshot/3.jpg)
