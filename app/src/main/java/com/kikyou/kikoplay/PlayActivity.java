@@ -883,7 +883,7 @@ public class PlayActivity extends AppCompatActivity {
                     try {
                         JSONArray danmuArray = new JSONObject(new String(result)).getJSONArray("data");
                         addDanmu(danmuArray);
-                        if (danmuView.isPrepared()) danmuView.start(player.getCurrentPosition());
+                        if (danmuView.isPrepared()) danmuView.seekTo(player.getCurrentPosition());
                         curDanmuCount=danmuArray.length();
                     } catch (Exception e) {
                         e.printStackTrace();
