@@ -12,9 +12,14 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
+import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -58,6 +63,8 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
 import com.google.android.exoplayer2.video.VideoListener;
+import com.kikyou.kikoplay.module.AsyncCallBack;
+import com.kikyou.kikoplay.module.DanmuPool;
 import com.kikyou.kikoplay.module.HttpUtil;
 import com.kikyou.kikoplay.module.PlayListAdapter;
 import com.kikyou.kikoplay.module.PlayListItem;
@@ -83,11 +90,13 @@ import master.flame.danmaku.danmaku.model.android.Danmakus;
 import master.flame.danmaku.danmaku.parser.BaseDanmakuParser;
 import master.flame.danmaku.ui.widget.DanmakuView;
 
-public class PlayActivity extends AppCompatActivity {
+public class PlayActivity extends AppCompatActivity implements PlaylistFragment.OnFragmentInteractionListener,DanmuFragment.OnFragmentInteractionListener {
     String kikoPlayServer;
     PlayListAdapter curAdapter;
     List<PlayListItem> curList;
     PlayListItem selectedItem;
+    DanmuPool pool;
+    AsyncCallBack loadDanmuCallBack;
 
     TrackSelection.Factory videoTrackSelectionFactory = new AdaptiveTrackSelection.Factory();
     TrackSelector trackSelector = new DefaultTrackSelector(videoTrackSelectionFactory);
@@ -96,7 +105,6 @@ public class PlayActivity extends AppCompatActivity {
 
     FrameLayout surfaceFrame;
     DanmakuContext danmuContext;
-    ListView curListView;
     SurfaceView videoSurface;
     SubtitleView subtitleView;
     AspectRatioFrameLayout surfaceAspect;
@@ -109,8 +117,11 @@ public class PlayActivity extends AppCompatActivity {
     TextView blockTopView,blockRollView,blockBottomView;
     SeekBar danmuOpacitySeek,danmuSizeSeek,danmuSpeedSeek,danmuRegionSeek;
     TextView danmuOpacityVal,danmuSizeVal,danmuSpeedVal,danmuRegionVal;
-    TextView danmuCount;
-    Button updateDanmuButton;
+
+    PlaylistFragment playlistFragment;
+    DanmuFragment danmuFragment;
+    TabLayout tabLayout;
+    ViewPager viewPager;
 
     boolean isDoubleClick = false;
     boolean isFullScreen = false;
@@ -162,6 +173,28 @@ public class PlayActivity extends AppCompatActivity {
         } catch (Settings.SettingNotFoundException e) {
             e.printStackTrace();
         }
+        playlistFragment=PlaylistFragment.newInstance();
+        danmuFragment=DanmuFragment.newInstance();
+        playlistFragment.setAdapter(curAdapter);
+        danmuFragment.setAdapter(pool);
+        viewPager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
+            @Override
+            public Fragment getItem(int i) {
+                return i==0?playlistFragment:danmuFragment;
+            }
+
+            @Override
+            public int getCount() {
+                return 2;
+            }
+
+            @Nullable
+            @Override
+            public CharSequence getPageTitle(int position) {
+                return position==0?"列表":"弹幕";
+            }
+        });
+        tabLayout.setupWithViewPager(viewPager);
         play(selectedItem);
     }
     @Override
@@ -351,8 +384,6 @@ public class PlayActivity extends AppCompatActivity {
 
     @SuppressLint("ClickableViewAccessibility")
     void initViews() {
-        curListView = findViewById(R.id.curPlayList);
-        curListView.setAdapter(curAdapter);
         player = ExoPlayerFactory.newSimpleInstance(this, trackSelector);
         videoSurface = findViewById(R.id.videoSurface);
         subtitleView = findViewById(R.id.subtitleView);
@@ -373,8 +404,9 @@ public class PlayActivity extends AppCompatActivity {
         seekTipText = findViewById(R.id.seekTipTextView);
         back=findViewById(R.id.ctr_back);
         titleText=findViewById(R.id.ctr_title);
-        danmuCount=findViewById(R.id.danmuCountView);
-        updateDanmuButton=findViewById(R.id.updateDanmu);
+        tabLayout=findViewById(R.id.tabs);
+        viewPager=findViewById(R.id.play_viewPager);
+
 
         danmuSettingView =findViewById(R.id.danmuSettingView);
         danmuSettingLayout=findViewById(R.id.danmuSettingLayout);
@@ -394,13 +426,6 @@ public class PlayActivity extends AppCompatActivity {
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
 
-        curListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                play((PlayListItem) curAdapter.getItem(position));
-            }
-        });
-
         setOrientationListener();
         fullScreen.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -412,16 +437,6 @@ public class PlayActivity extends AppCompatActivity {
             }
         });
 
-        updateDanmuButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PlayListItem curItem=curAdapter.getCurPlayItem();
-                if(curItem==null) return;
-                updateDanmuButton.setEnabled(false);
-                updateDanmuButton.setText(getText(R.string.danmu_updating));
-                updateDanmu(curItem);
-            }
-        });
         surfaceFrame.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -671,48 +686,6 @@ public class PlayActivity extends AppCompatActivity {
                 Snackbar.make(findViewById(R.id.playLayout), error.getMessage(), Snackbar.LENGTH_LONG).show();
             }
         });
-
-        final GestureDetector backSwipeDetector=new GestureDetector(this, new GestureDetector.OnGestureListener() {
-            @Override
-            public boolean onDown(MotionEvent e) {
-                return false;
-            }
-
-            @Override
-            public void onShowPress(MotionEvent e) {
-
-            }
-
-            @Override
-            public boolean onSingleTapUp(MotionEvent e) {
-                return false;
-            }
-
-            @Override
-            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-                return false;
-            }
-
-            @Override
-            public void onLongPress(MotionEvent e) {
-
-            }
-
-            @Override
-            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                if (e2.getX() - e1.getX() > curListView.getWidth()/5) {
-                    PlayActivity.this.onBackPressed();
-                    return true;
-                }
-                return false;
-            }
-        });
-        curListView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                return backSwipeDetector.onTouchEvent(event);
-            }
-        });
     }
 
     void setOrientationListener() {
@@ -763,6 +736,7 @@ public class PlayActivity extends AppCompatActivity {
     void play(final PlayListItem item) {
         if(item==curAdapter.getCurPlayItem()) return;
         updatePlayTime(curAdapter.getCurPlayItem());
+        pool.clear();
         HttpUtil.getAsync("http://" + kikoPlayServer + "/api/subtitle?id=" + item.getMedia(), new ResponseHandler() {
             @Override
             public void onResponse(byte[] result) {
@@ -789,13 +763,15 @@ public class PlayActivity extends AppCompatActivity {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    loadDanmu(item);
+                    selectedItem=item;
+                    pool.loadDanmu(item.getPool(), loadDanmuCallBack);
+                    //loadDanmu(item);
                     seekToLastPlayTime=(item.getPlayTimeState()==1);
                     player.setPlayWhenReady(true);
                     titleText.setText(item.getTitle());
                     curAdapter.setCurPlayItem(item);
-                    updateDanmuButton.setEnabled(true);
-                    updateDanmuButton.setText(getText(R.string.danmu_update));
+                    //updateDanmuButton.setEnabled(true);
+                    //updateDanmuButton.setText(getText(R.string.danmu_update));
                 } else {
                     Snackbar.make(findViewById(R.id.playLayout), getText(R.string.subtitleInfoFailed), Snackbar.LENGTH_LONG).show();
                 }
@@ -842,80 +818,22 @@ public class PlayActivity extends AppCompatActivity {
         overlappingEnablePair.put(BaseDanmaku.TYPE_SCROLL_RL, true);
         danmuContext.preventOverlapping(overlappingEnablePair);
         danmuView.prepare(parser,danmuContext);
-    }
-    void updateDanmu(final PlayListItem item) {
-        HttpUtil.getAsync("http://" + kikoPlayServer + "/api/danmu/v3/?id=" + item.getPool() + "&update=true", new ResponseHandler() {
-            PlayListItem updateItem;
-            {
-                updateItem=item;
-            }
+        pool=new DanmuPool(player,danmuView,danmuContext,parser,this,kikoPlayServer);
+        loadDanmuCallBack=new AsyncCallBack() {
             @Override
-            public void onResponse(byte[] result) {
-                PlayListItem curItem=curAdapter.getCurPlayItem();
-                if(curItem==null || !updateItem.getPool().equals(curItem.getPool())) return;
-                if (result != null) {
-                    try {
-                        JSONObject obj=new JSONObject(new String(result));
-                        if(obj.getBoolean("update")) {
-                            JSONArray danmuArray = obj.getJSONArray("data");
-                            addDanmu(danmuArray);
-                            curDanmuCount += danmuArray.length();
-                            danmuCount.setText(String.format(getString(R.string.danmu_count_desc), curDanmuCount));
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    Snackbar.make(findViewById(R.id.playLayout), getText(R.string.danmuUpdateFailed), Snackbar.LENGTH_LONG).show();
-                }
-                updateDanmuButton.setEnabled(true);
-                updateDanmuButton.setText(getText(R.string.danmu_update));
-            }
-        },5000,60*1000);
-    }
-    void loadDanmu(PlayListItem item) {
-        danmuCount.setText(getText(R.string.danmu_count_tip));
-        HttpUtil.getAsync("http://" + kikoPlayServer + "/api/danmu/v3/?id=" + item.getPool(), new ResponseHandler() {
-            @Override
-            public void onResponse(byte[] result) {
-                danmuView.removeAllDanmakus(true);
-                if (result != null) {
-                    try {
-                        JSONArray danmuArray = new JSONObject(new String(result)).getJSONArray("data");
-                        addDanmu(danmuArray);
-                        if (danmuView.isPrepared()) danmuView.seekTo(player.getCurrentPosition());
-                        curDanmuCount=danmuArray.length();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        curDanmuCount=0;
-                    }
-                } else {
+            public void onResponse(int state) {
+                danmuFragment.updateCountInfo();
+                if(state<0){
                     Snackbar.make(findViewById(R.id.playLayout), getText(R.string.loadDanmuFaildTip), Snackbar.LENGTH_LONG)
                             .setAction("Retry", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    loadDanmu(selectedItem);
+                                    pool.loadDanmu(selectedItem.getPool(), loadDanmuCallBack);
                                 }
                             }).show();
-                    curDanmuCount=0;
                 }
-                danmuCount.setText(String.format(getString(R.string.danmu_count_desc), curDanmuCount));
             }
-        },5000,15*1000);
-    }
-    void addDanmu(JSONArray danmuArray) throws JSONException {
-        int[] type = {1, 5, 4};
-        for (int i = 0; i < danmuArray.length(); i++) {
-            JSONArray dm = (JSONArray) danmuArray.get(i);
-            BaseDanmaku danmu = danmuContext.mDanmakuFactory.createDanmaku(type[dm.getInt(1)], danmuContext);
-            danmu.text = dm.getString(4);
-            danmu.setTime((long) (dm.getDouble(0) * 1000));
-            danmu.textColor = dm.getInt(2);
-            int cv = (danmu.textColor & 0xff) + ((danmu.textColor >> 8) & 0xff) + ((danmu.textColor >> 16) & 0xff);
-            danmu.textShadowColor = cv / 3 <= 128 ? Color.WHITE : Color.BLACK;
-            danmu.textSize = 25 * (parser.getDisplayer().getDensity() - 0.5f);
-            danmuView.addDanmaku(danmu);
-        }
+        };
     }
     void updatePlayTime(PlayListItem item){
         if(item==null) return;
@@ -935,6 +853,19 @@ public class PlayActivity extends AppCompatActivity {
         }
         catch (Exception e){
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onPlayItemChanged(PlayListItem item) {
+        play(item);
+    }
+
+    @Override
+    public void showUpdateStatus(int state) {
+        danmuFragment.updateCountInfo();
+        if(state<0){
+            Snackbar.make(findViewById(R.id.playLayout), getText(R.string.danmuUpdateFailed), Snackbar.LENGTH_LONG).show();
         }
     }
 }

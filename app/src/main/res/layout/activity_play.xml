@@ -49,39 +49,20 @@
             android:visibility="invisible"/>
     </FrameLayout>
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/danmuInfoCard"
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tabs"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/curPlayList"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/surfaceFrame">
-
-        <TextView
-            android:id="@+id/danmuCountView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="8dp"
-            android:textSize="@dimen/textSizeMedium" />
-
-        <Button
-            android:id="@+id/updateDanmu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_marginEnd="8dp"
-            android:text="@string/danmu_update"
-            android:theme="@style/PrimaryButton" />
-    </android.support.v7.widget.CardView>
-
-    <ListView
-        android:id="@+id/curPlayList"
+        app:layout_constraintTop_toBottomOf="@id/surfaceFrame" />
+    <android.support.v4.view.ViewPager
+        android:id="@+id/play_viewPager"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/danmuInfoCard" />
+        app:layout_constraintTop_toBottomOf="@id/tabs"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
 </android.support.constraint.ConstraintLayout>

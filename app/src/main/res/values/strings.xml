@@ -29,10 +29,19 @@
     <string name="subtitleInfoFailed">获取信息失败</string>
     <string name="danmu_count_tip">正在加载弹幕...</string>
     <string name="danmu_count_desc">弹幕数量：%d</string>
+    <string name="source_title_info">%s (%d)</string>
+    <string name="source_delay_info">延迟: %ds</string>
+    <string name="delay_dialog_title">设置延迟(s)</string>
+    <string name="timeline_start_hint">开始(mm:ss)</string>
+    <string name="timeline_duration_hint">时长(s)</string>
+    <string name="timeline_add">添加</string>
     <string-array name="danmu_region">
         <item>1/4屏</item>
         <item>半屏</item>
         <item>3/4屏</item>
         <item>满屏</item>
     </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

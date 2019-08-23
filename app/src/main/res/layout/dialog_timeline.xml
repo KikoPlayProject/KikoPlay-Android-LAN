@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:minHeight="300dp"
+    android:minWidth="300dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <EditText
+        android:id="@+id/timeline_start"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:hint="@string/timeline_start_hint"
+        android:minWidth="100dp"
+        app:layout_constraintHorizontal_weight="2"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/timeline_duration"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/timeline_duration"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:hint="@string/timeline_duration_hint"
+        android:minWidth="100dp"
+        app:layout_constraintLeft_toRightOf="@id/timeline_start"
+        app:layout_constraintRight_toLeftOf="@id/timeline_add"
+        app:layout_constraintHorizontal_weight="2"
+        app:layout_constraintTop_toTopOf="parent" />
+    <Button
+        android:id="@+id/timeline_add"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@id/timeline_duration"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintHorizontal_weight="1"
+        android:layout_marginTop="10dp"
+        android:text="@string/timeline_add"/>
+    <ListView
+        android:id="@+id/timeline_list"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:minHeight="100dp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/timeline_start"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+</android.support.constraint.ConstraintLayout>
