@@ -2,6 +2,7 @@ package com.kikyou.kikoplay;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -20,11 +21,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.OrientationEventListener;
 import android.view.SurfaceView;
@@ -34,6 +37,7 @@ import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -110,7 +114,7 @@ public class PlayActivity extends AppCompatActivity implements PlaylistFragment.
     AspectRatioFrameLayout surfaceAspect;
     DanmakuView danmuView;
     View playControl;
-    ImageButton playPause, fullScreen, danmuSetting, danmuVisible,back;
+    ImageButton playPause, fullScreen, danmuSetting, danmuVisible,back, captureImage, captureSnippet;
     SeekBar videoSeekBar;
     TextView timeText,seekTipText,titleText;
     ConstraintLayout danmuSettingView,danmuSettingLayout;
@@ -129,15 +133,14 @@ public class PlayActivity extends AppCompatActivity implements PlaylistFragment.
     boolean isSeeking = false;
     boolean isChangingVolume = false;
     boolean isChangingBrightness = false;
-    boolean isUpdating = false;
     boolean pauseOnStop = false;
-    int curDanmuCount=0;
     int maxVolume,curVolume;
     float curBrightness=0.f;
     float downX=0.f,downY=0.f;
     int downTime=0;
     boolean isBlockTop = false, isBlockBottom = false, isBlockRoll = false;
     float textScale=1.f;
+    int snippetStartPos = -1;
 
 
     Timer refreshTimer;
@@ -403,6 +406,8 @@ public class PlayActivity extends AppCompatActivity implements PlaylistFragment.
         playPause = findViewById(R.id.ctr_pause);
         seekTipText = findViewById(R.id.seekTipTextView);
         back=findViewById(R.id.ctr_back);
+        captureImage = findViewById(R.id.ctr_capture_image);
+        captureSnippet = findViewById(R.id.ctr_capture_snippet);
         titleText=findViewById(R.id.ctr_title);
         tabLayout=findViewById(R.id.tabs);
         viewPager=findViewById(R.id.play_viewPager);
@@ -579,6 +584,97 @@ public class PlayActivity extends AppCompatActivity implements PlaylistFragment.
             @Override
             public void onClick(View v) {
                 onBackPressed();
+            }
+        });
+        captureImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (selectedItem == null) return;
+                try {
+                    JSONObject obj = new JSONObject();
+                    int curPos = (int)player.getCurrentPosition()/1000;
+                    obj.put("mediaId", selectedItem.getMedia());
+                    obj.put("animeName", selectedItem.getAnimeName());
+                    obj.put("pos", curPos);
+                    HttpUtil.postAsync("http://" + kikoPlayServer + "/api/screenshot", obj.toString(), null, 5000, 5000);
+                    int cmin = curPos / 60;
+                    int csec = curPos - cmin * 60;
+                    Snackbar.make(findViewById(R.id.playLayout),
+                            String.format(getString(R.string.capture_image_task_sent), String.format("%02d:%02d", cmin, csec)),
+                            Snackbar.LENGTH_LONG).show();
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+        captureSnippet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (selectedItem == null) return;
+                try {
+                    if(snippetStartPos==-1)
+                    {
+                        snippetStartPos = (int)player.getCurrentPosition()/1000;
+                        captureSnippet.setImageResource(R.drawable.ic_capture_stop);
+                        int cmin = snippetStartPos / 60;
+                        int csec = snippetStartPos - cmin * 60;
+                        Snackbar.make(findViewById(R.id.playLayout),
+                                String.format(getString(R.string.capture_snipped_start_tip), String.format("%02d:%02d", cmin, csec)),
+                                Snackbar.LENGTH_LONG).show();
+                    }
+                    else
+                    {
+                        final int curPos = (int)player.getCurrentPosition()/1000;
+                        AlertDialog.Builder inputDialog = new AlertDialog.Builder(PlayActivity.this);
+                        View view = LayoutInflater.from(PlayActivity.this).inflate(R.layout.dialog_snippet, null);
+                        final CheckBox retainAudioCheck = view.findViewById(R.id.snippet_retain_audio_check);
+                        TextView tipView = view.findViewById(R.id.snippet_info);
+                        int start = snippetStartPos, end = curPos;
+                        if(end < start) {
+                            start = curPos; end = snippetStartPos;
+                        }
+                        if(end - start < 1) end = start + 1;
+                        if(end - start > 15) end = start + 15;
+                        int smin = start / 60, emin = end / 60;
+                        int ssec = start - smin * 60, esec = end - emin * 60;
+                        tipView.setText(String.format(getString(R.string.snippet_info),
+                                String.format("%02d:%02d", smin, ssec),
+                                String.format("%02d:%02d", emin, esec),
+                                end - start));
+                        inputDialog.setTitle(R.string.snippet_dialog_title).setView(view);
+                        final int snippetStart = snippetStartPos, snippetDuraition = end - start;
+                        inputDialog.setPositiveButton("OK",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        try{
+                                            JSONObject obj = new JSONObject();
+                                            obj.put("mediaId", selectedItem.getMedia());
+                                            obj.put("animeName", selectedItem.getAnimeName());
+                                            obj.put("pos", snippetStart);
+                                            obj.put("duration", snippetDuraition);
+                                            obj.put("retainAudio", retainAudioCheck.isChecked());
+                                            HttpUtil.postAsync("http://" + kikoPlayServer + "/api/screenshot", obj.toString(), null, 5000, 5000);
+                                            Snackbar.make(findViewById(R.id.playLayout),
+                                                    getString(R.string.capture_snipped_stop_tip),
+                                                    Snackbar.LENGTH_LONG).show();
+                                        }
+                                        catch (Exception e){
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }).setNegativeButton("Cancel",null).show();
+                        snippetStartPos = -1;
+                        captureSnippet.setImageResource(R.drawable.ic_capture_start);
+                    }
+
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+
             }
         });
         playPause.setOnClickListener(new View.OnClickListener() {

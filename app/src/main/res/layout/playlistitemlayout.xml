@@ -26,7 +26,7 @@
         app:layout_constraintBottom_toTopOf="@id/desc"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintLeft_toRightOf="@id/play_state"
-        app:layout_constraintRight_toLeftOf="@id/item_state"
+        app:layout_constraintRight_toLeftOf="@id/item_marker"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
         android:layout_marginStart="10dp"
@@ -47,10 +47,18 @@
         tools:text="desc" />
 
     <ImageView
+        android:id="@+id/item_marker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/item_state"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
         android:id="@+id/item_state"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"

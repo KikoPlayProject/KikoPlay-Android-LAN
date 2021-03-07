@@ -29,12 +29,20 @@
     <string name="subtitleInfoFailed">获取信息失败</string>
     <string name="danmu_count_tip">正在加载弹幕...</string>
     <string name="danmu_count_desc">弹幕数量：%d</string>
-    <string name="source_title_info">%s (%d)</string>
+    <string name="source_title_info">%s - %s (%d)</string>
     <string name="source_delay_info">延迟: %ds</string>
     <string name="delay_dialog_title">设置延迟(s)</string>
     <string name="timeline_start_hint">开始(mm:ss)</string>
     <string name="timeline_duration_hint">时长(s)</string>
     <string name="timeline_add">添加</string>
+    <string name="capture_image">截图到资料库</string>
+    <string name="capture_snippet">截取片段到资料库</string>
+    <string name="capture_image_task_sent">截图任务 %s 已发送</string>
+    <string name="capture_snipped_start_tip">已选择截取开始位置[%s], 再次点击选择结束位置 </string>
+    <string name="snippet_retain_audio">保留片段音频</string>
+    <string name="snippet_dialog_title">片段截取</string>
+    <string name="snippet_info">开始: %s 结束: %s 时长: %ds</string>
+    <string name="capture_snipped_stop_tip">片段截取任务已发送</string>
     <string-array name="danmu_region">
         <item>1/4屏</item>
         <item>半屏</item>

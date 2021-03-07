@@ -117,7 +117,7 @@ public class HttpUtil {
             urlConnection.setDoOutput(true);
             urlConnection.setDoInput(true);
             DataOutputStream dos= new DataOutputStream(urlConnection.getOutputStream());
-            dos.writeBytes(data);
+            dos.write(data.getBytes());
             close(dos);
 
             int responseCode = urlConnection.getResponseCode();

@@ -27,12 +27,12 @@ public class PlayListAdapter extends BaseAdapter {
 
     public PlayListAdapter(Context context) {
         this.context = context;
-        root=new PlayListItem(null,null,null,null);
+        root=new PlayListItem(null,null,null,null, null);
         curCollection=root;
     }
 
     public void setJsonData(String json){
-        root=new PlayListItem(null,null,null,null);
+        root=new PlayListItem(null,null,null,null, null);
         try {
             JSONArray curArray = new JSONArray(json);
             buildList(curArray,root);
@@ -53,14 +53,21 @@ public class PlayListAdapter extends BaseAdapter {
         for(int i = 0;i < curArray.length();i++){
             JSONObject itemObject = (JSONObject) curArray.get(i);
             if(itemObject.has("nodes")) {
-                PlayListItem collection=new PlayListItem(parent,itemObject.getString("text"),null,null);
+                PlayListItem collection=new PlayListItem(parent,itemObject.getString("text"),null,null, null);
+                if(itemObject.has("marker")) {
+                    collection.setMarker(PlayListItem.Marker.values()[itemObject.getInt("marker")]);
+                }
                 buildList(itemObject.getJSONArray("nodes"),collection);
             }
             else{
                 PlayListItem item=new PlayListItem(parent,itemObject.getString("text"),
-                        itemObject.getString("mediaId"),itemObject.getString("danmuPool"));
+                        itemObject.getString("mediaId"),itemObject.getString("danmuPool"),
+                        itemObject.getString("animeName"));
                 item.setPlayTime(itemObject.getInt("playTime"));
                 item.setPlayTimeState(itemObject.getInt("playTimeState"));
+                if(itemObject.has("marker")) {
+                    item.setMarker(PlayListItem.Marker.values()[itemObject.getInt("marker")]);
+                }
             }
         }
     }
@@ -142,6 +149,7 @@ public class PlayListAdapter extends BaseAdapter {
             viewHolder.desc = convertView.findViewById(R.id.desc);
             viewHolder.playState = convertView.findViewById(R.id.play_state);
             viewHolder.expandable = convertView.findViewById(R.id.item_state);
+            viewHolder.marker = convertView.findViewById(R.id.item_marker);
             convertView.setTag(viewHolder);
         }else{
             viewHolder = (ViewHolder) convertView.getTag();
@@ -174,6 +182,12 @@ public class PlayListAdapter extends BaseAdapter {
         if(item==curPlayItem)viewHolder.playState.setImageResource(R.drawable.ic_play);
         else viewHolder.playState.setImageDrawable(null);
         viewHolder.playState.setVisibility(item==curPlayItem?View.VISIBLE:View.GONE);
+        if(item.getMarker()!=PlayListItem.Marker.M_NONE){
+            viewHolder.marker.setVisibility(View.VISIBLE);
+            viewHolder.marker.setImageResource(PlayListItem.MarkerIcon[item.getMarker().ordinal()]);
+        }else{
+            viewHolder.marker.setImageDrawable(null);
+        }
 
         return convertView;
     }
@@ -182,6 +196,7 @@ public class PlayListAdapter extends BaseAdapter {
         TextView title;
         TextView desc;
         ImageView playState;
+        ImageView marker;
         ImageView expandable;
     }
 }

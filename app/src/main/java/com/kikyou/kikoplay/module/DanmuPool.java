@@ -63,10 +63,11 @@ class DanmuComment {
 }
 class SourceInfo {
     String title;
-    String url;
+    String scriptId, scriptData, scriptName;
     int id;
     int delay;
     int count;
+    int duration;
     List<Pair<Integer, Integer>> timeline=new ArrayList<>();
     void setTimeline(String timelineStr) {
         timeline.clear();
@@ -184,8 +185,8 @@ public class DanmuPool extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.title.setText(String.format(context.getString(R.string.source_title_info),sourceInfo.title,sourceInfo.count));
-        viewHolder.url.setText(sourceInfo.url);
+        viewHolder.title.setText(String.format(context.getString(R.string.source_title_info), sourceInfo.scriptName, sourceInfo.title,sourceInfo.count));
+        viewHolder.url.setText(formatTime(sourceInfo.duration*1000));
         viewHolder.delay.setText(String.format(context.getString(R.string.source_delay_info),sourceInfo.delay/1000));
         return convertView;
     }
@@ -266,10 +267,19 @@ public class DanmuPool extends BaseAdapter {
             JSONObject sourceObj = (JSONObject)sourceArray.get(i);
             SourceInfo srcInfo=new SourceInfo();
             srcInfo.title=sourceObj.getString("name");
-            srcInfo.url=sourceObj.getString("url");
+            if(sourceObj.has("scriptName"))
+                srcInfo.scriptName=sourceObj.getString("scriptName");
+            if(sourceObj.has("scriptData"))
+                srcInfo.scriptData=sourceObj.getString("scriptData");
+            if(sourceObj.has("scriptId"))
+                srcInfo.scriptId=sourceObj.getString("scriptId");
             srcInfo.id=sourceObj.getInt("id");
-            srcInfo.delay=sourceObj.getInt("delay");
-            srcInfo.setTimeline(sourceObj.getString("timeline"));
+            if(sourceObj.has("delay"))
+                srcInfo.delay=sourceObj.getInt("delay");
+            if(sourceObj.has("timeline"))
+                srcInfo.setTimeline(sourceObj.getString("timeline"));
+            if(sourceObj.has("duration"))
+                srcInfo.duration=sourceObj.getInt("duration");
             sources.add(srcInfo);
             sourcesHash.put(srcInfo.id, srcInfo);
         }
