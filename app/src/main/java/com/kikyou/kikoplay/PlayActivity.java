@@ -601,14 +601,19 @@ public class PlayActivity extends AppCompatActivity implements PlaylistFragment.
             public void onClick(View v) {
                 if (selectedItem == null) return;
                 try {
+
+
                     JSONObject obj = new JSONObject();
                     int curPos = (int)player.getCurrentPosition()/1000;
+                    int cmin = curPos/ 60;
+                    int csec = curPos - cmin * 60;
+                    String info = String.format("%02d:%02d - %s", cmin, csec, selectedItem.getTitle());
                     obj.put("mediaId", selectedItem.getMedia());
                     obj.put("animeName", selectedItem.getAnimeName());
                     obj.put("pos", curPos);
+                    obj.put("info", info);
                     HttpUtil.postAsync("http://" + kikoPlayServer + "/api/screenshot", obj.toString(), null, 5000, 5000);
-                    int cmin = curPos / 60;
-                    int csec = curPos - cmin * 60;
+
                     Snackbar.make(findViewById(R.id.playLayout),
                             String.format(getString(R.string.capture_image_task_sent), String.format("%02d:%02d", cmin, csec)),
                             Snackbar.LENGTH_LONG).show();
@@ -661,10 +666,14 @@ public class PlayActivity extends AppCompatActivity implements PlaylistFragment.
                                     public void onClick(DialogInterface dialog, int which) {
                                         try{
                                             JSONObject obj = new JSONObject();
+                                            int cmin = snippetStart/ 60;
+                                            int csec = snippetStart - cmin * 60;
+                                            String info = String.format("%02d:%02d, %ds - %s", cmin, csec, snippetDuraition, selectedItem.getTitle());
                                             obj.put("mediaId", selectedItem.getMedia());
                                             obj.put("animeName", selectedItem.getAnimeName());
                                             obj.put("pos", snippetStart);
                                             obj.put("duration", snippetDuraition);
+                                            obj.put("info", info);
                                             obj.put("retainAudio", retainAudioCheck.isChecked());
                                             HttpUtil.postAsync("http://" + kikoPlayServer + "/api/screenshot", obj.toString(), null, 5000, 5000);
                                             Snackbar.make(findViewById(R.id.playLayout),
