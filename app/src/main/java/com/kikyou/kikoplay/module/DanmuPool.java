@@ -123,6 +123,7 @@ public class DanmuPool extends BaseAdapter {
     private BaseDanmakuParser parser;
     private String kikoPlayServer;
     private String poolId;
+    private List<String> launchScriptIds;
 
     public DanmuPool(SimpleExoPlayer player, DanmakuView danmakuView, DanmakuContext danmakuContext, BaseDanmakuParser parser, Context context, String serverAddress){
         this.player=player;
@@ -132,6 +133,7 @@ public class DanmuPool extends BaseAdapter {
         this.context=context;
         kikoPlayServer=serverAddress;
         sources=new ArrayList<>();
+        launchScriptIds= new ArrayList<>();
         sourcesHash=new HashMap<>();
         comments=new ArrayList<>();
     }
@@ -283,6 +285,13 @@ public class DanmuPool extends BaseAdapter {
             sources.add(srcInfo);
             sourcesHash.put(srcInfo.id, srcInfo);
         }
+        launchScriptIds.clear();
+        if(danmuObj.has("launchScripts")) {
+            JSONArray scripts = danmuObj.getJSONArray("launchScripts");
+            for(int i=0;i<scripts.length();++i) {
+                launchScriptIds.add(scripts.get(i).toString());
+            }
+        }
         addDanmu(danmuArray, false);
         notifyDataSetChanged();
         updateDanmakuView();
@@ -419,6 +428,22 @@ public class DanmuPool extends BaseAdapter {
                 }
             }
         },5000,60*1000);
+    }
+    public boolean canLaunch(){
+        return launchScriptIds.size()>0;
+    }
+    public void launch(int time, String text){
+        if(text.isEmpty() || poolId.isEmpty()) return;
+        try {
+            JSONObject obj = new JSONObject();
+            obj.put("danmuPool", poolId);
+            obj.put("time", time);
+            obj.put("launchScripts", new JSONArray(launchScriptIds));
+            obj.put("text", text);
+            HttpUtil.postAsync("http://" + kikoPlayServer + "/api/danmu/launch", obj.toString(), null, 5000, 5000);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
     class ViewHolder{
         TextView title;

@@ -8,6 +8,7 @@
     <string name="fullscreen">全屏</string>
     <string name="danmu_show_hide">弹幕显示/隐藏</string>
     <string name="danmu_setting">弹幕设置</string>
+    <string name="danmu_launch">发送弹幕</string>
     <string name="listError">获取播放列表时出错</string>
     <string name="listNotConnect">尚未设置KikoPlay局域网服务地址</string>
     <string name="listEmpyt">播放列表是空的</string>
@@ -32,6 +33,7 @@
     <string name="source_title_info">%s - %s (%d)</string>
     <string name="source_delay_info">延迟: %ds</string>
     <string name="delay_dialog_title">设置延迟(s)</string>
+    <string name="launch_dialog_title">发送弹幕(%s)</string>
     <string name="timeline_start_hint">开始(mm:ss)</string>
     <string name="timeline_duration_hint">时长(s)</string>
     <string name="timeline_add">添加</string>

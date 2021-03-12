@@ -38,6 +38,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -114,7 +115,8 @@ public class PlayActivity extends AppCompatActivity implements PlaylistFragment.
     AspectRatioFrameLayout surfaceAspect;
     DanmakuView danmuView;
     View playControl;
-    ImageButton playPause, fullScreen, danmuSetting, danmuVisible,back, captureImage, captureSnippet;
+    ImageButton playPause, fullScreen, danmuSetting, danmuVisible, danmuLaunch, back,
+            captureImage, captureSnippet;
     SeekBar videoSeekBar;
     TextView timeText,seekTipText,titleText;
     ConstraintLayout danmuSettingView,danmuSettingLayout;
@@ -398,6 +400,7 @@ public class PlayActivity extends AppCompatActivity implements PlaylistFragment.
         fullScreen = findViewById(R.id.ctr_fullscreen);
         danmuVisible = findViewById(R.id.ctr_danmu);
         danmuSetting = findViewById(R.id.ctr_danmu_settings);
+        danmuLaunch = findViewById(R.id.ctr_danmu_launch);
         orientationHandler = new OrientationHandler(this);
         danmuView = findViewById(R.id.danmuView);
         //controlBtnPanel = findViewById(R.id.controlBtnLayout);
@@ -549,6 +552,13 @@ public class PlayActivity extends AppCompatActivity implements PlaylistFragment.
                                 }
                                 else {
                                     playControl.setVisibility(playControl.getVisibility()!=View.VISIBLE ? View.VISIBLE : View.INVISIBLE);
+                                    if(isFullScreen && playControl.getVisibility()==View.INVISIBLE){
+                                        int uiFlags = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                                                | View.SYSTEM_UI_FLAG_FULLSCREEN //hide statusBar
+                                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION; //hide navigationBar
+                                        surfaceFrame.setSystemUiVisibility(uiFlags);
+                                    }
                                 }
                             }
                         }
@@ -675,6 +685,27 @@ public class PlayActivity extends AppCompatActivity implements PlaylistFragment.
                     e.printStackTrace();
                 }
 
+            }
+        });
+        danmuLaunch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (selectedItem == null || !pool.canLaunch()) return;
+                    final int time = (int)player.getCurrentPosition();
+                    int cmin = time/1000/ 60;
+                    int csec = time/1000 - cmin * 60;
+
+                    final EditText editText = new EditText(PlayActivity.this);
+                    AlertDialog.Builder inputDialog = new AlertDialog.Builder(PlayActivity.this);
+                    inputDialog.setTitle(String.format(getString(R.string.launch_dialog_title), String.format("%02d:%02d", cmin, csec)))
+                            .setView(editText);
+                    inputDialog.setPositiveButton("Send",
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    pool.launch(time, editText.getText().toString());
+                                }
+                    }).setNegativeButton("Cancel",null).show();
             }
         });
         playPause.setOnClickListener(new View.OnClickListener() {
@@ -927,6 +958,11 @@ public class PlayActivity extends AppCompatActivity implements PlaylistFragment.
                                     pool.loadDanmu(selectedItem.getPool(), loadDanmuCallBack);
                                 }
                             }).show();
+                }
+                if(pool.canLaunch()){
+                    danmuLaunch.setVisibility(View.VISIBLE);
+                } else {
+                    danmuLaunch.setVisibility(View.GONE);
                 }
             }
         };
