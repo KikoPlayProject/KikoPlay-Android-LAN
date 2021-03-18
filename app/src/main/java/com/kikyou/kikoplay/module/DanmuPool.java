@@ -441,6 +441,16 @@ public class DanmuPool extends BaseAdapter {
             obj.put("launchScripts", new JSONArray(launchScriptIds));
             obj.put("text", text);
             HttpUtil.postAsync("http://" + kikoPlayServer + "/api/danmu/launch", obj.toString(), null, 5000, 5000);
+
+            BaseDanmaku danmu = danmakuContext.mDanmakuFactory.createDanmaku(1, danmakuContext);
+            danmu.text = text;
+            danmu.setTime(time);
+            danmu.textColor = 0xffffff;
+            int cv = (danmu.textColor & 0xff) + ((danmu.textColor >> 8) & 0xff) + ((danmu.textColor >> 16) & 0xff);
+            danmu.textShadowColor = Color.BLACK;
+            danmu.textSize = 25 * (parser.getDisplayer().getDensity() - 0.5f);
+            danmakuView.addDanmaku(danmu);
+
         }catch (Exception e){
             e.printStackTrace();
         }
